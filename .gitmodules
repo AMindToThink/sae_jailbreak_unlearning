@@ -1,0 +1,3 @@
+[submodule "src/scripts/evaluation/MMLU/test"]
+	path = src/scripts/evaluation/MMLU/test
+	url = https://github.com/hendrycks/test.git
