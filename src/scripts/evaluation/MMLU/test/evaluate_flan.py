@@ -4,7 +4,7 @@ import torch
 import numpy as np
 import pandas as pd
 from categories import subcategories, categories
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, AutoModelForCausalLM
 import time
 
 choices = ["A", "B", "C", "D"]
@@ -101,7 +101,6 @@ def eval(args, subject, model, tokenizer, dev_df, test_df):
 
 
 def main(args):
-
     model = AutoModelForSeq2SeqLM.from_pretrained(args.model)
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     heads_per_gpu = len(model.encoder.block) // args.ngpu
