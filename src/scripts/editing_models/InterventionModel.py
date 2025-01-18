@@ -27,10 +27,54 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
         super().__init__(config)
         self.model = HookedSAETransformer.from_pretrained(base_name, device=device)
         self.fwd_hooks = fwd_hooks
+    @classmethod
+    def from_csv(cls, csv_path: str, device: str = 'cuda:0') -> 'InterventionGemmaModel':
+        """
+        Create an InterventionGemmaModel from a CSV file containing steering configurations.
+        
+        Expected CSV format:
+        index, coefficient, sae_id, description
+        12082, 240.0, layer_20/width_16k/canonical, increase dogs
+        ...
 
+        Args:
+            csv_path: Path to the CSV file containing steering configurations
+            device: Device to place the model on
+
+        Returns:
+            InterventionGemmaModel with configured steering hooks
+        """
+        import pandas as pd
+        
+        # Read steering configurations
+        df = pd.read_csv(csv_path)
+        
+        # Create hooks for each row in the CSV
+        hooks = []
+        for _, row in df.iterrows():
+            sae = SAE.from_pretrained(gemmascope_sae_release, row['sae_id'], device=str(device))[0]
+            hook = partial(
+                steering_hook,
+                sae=sae,
+                latent_idx=int(row['latent_idx']),
+                steering_coefficient=float(row['steering_coefficient'])
+            )
+            hooks.append((sae.cfg.hook_name, hook))
+        
+        # Create and return the model
+        return cls(fwd_hooks=hooks, device=device)
     def forward(self, *args, **kwargs):
+        # Handle both input_ids and direct tensor inputs
+        if 'input_ids' in kwargs:
+            input_tensor = kwargs.pop('input_ids')  # Use pop to remove it
+        elif args:
+            input_tensor = args[0]
+            args = args[1:]  # Remove the first argument
+        else:
+            input_tensor = None
+    
         with self.model.hooks(fwd_hooks=self.fwd_hooks):
-            output = self.model.forward(*args, **kwargs)
+            output = self.model.forward(input_tensor, *args, **kwargs)
         return output
 
 if __name__ == '__main__':

@@ -4,8 +4,12 @@ import torch
 import numpy as np
 import pandas as pd
 from categories import subcategories, categories
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 import time
+
+import sys
+sys.path.append("../../../")
+from editing_models.InterventionModel import InterventionGemmaModel
 
 choices = ["A", "B", "C", "D"]
 
@@ -62,21 +66,20 @@ def eval(args, subject, model, tokenizer, dev_df, test_df):
             input_ids = tokenizer(prompt, return_tensors="pt").input_ids.cuda()
 
         label = test_df.iloc[i, test_df.shape[1] - 1]
-
-        decoder_input_ids = tokenizer("", return_tensors="pt").input_ids.cuda()
-        decoder_input_ids = model._shift_right(decoder_input_ids)
-        logits = model(
-            input_ids=input_ids, decoder_input_ids=decoder_input_ids
-        ).logits.flatten()
+        
+        # Modified inference for causal models
+        outputs = model(input_ids=input_ids)
+        all_logits = outputs if type(outputs) == torch.Tensor else outputs.logits
+        logits = all_logits[0, -1]  # Get logits for last token
 
         probs = (
             torch.nn.functional.softmax(
                 torch.tensor(
                     [
-                        logits[tokenizer("A").input_ids[0]],
-                        logits[tokenizer("B").input_ids[0]],
-                        logits[tokenizer("C").input_ids[0]],
-                        logits[tokenizer("D").input_ids[0]],
+                        logits[tokenizer("A").input_ids[-1]],
+                        logits[tokenizer("B").input_ids[-1]],
+                        logits[tokenizer("C").input_ids[-1]],
+                        logits[tokenizer("D").input_ids[-1]],
                     ]
                 ),
                 dim=0,
@@ -101,19 +104,28 @@ def eval(args, subject, model, tokenizer, dev_df, test_df):
 
 
 def main(args):
-    model = AutoModelForSeq2SeqLM.from_pretrained(args.model)
+    assert args.intervention_steer_csv_path == '' or args.model == 'google/gemma-2-2b', "Only gemma interventions supported for interventions."
+    # Changed model loading for causal models
+    model = AutoModelForCausalLM.from_pretrained(args.model, device=args.device) if args.intervention_steer_csv_path == '' else InterventionGemmaModel.from_csv(csv_path=args.intervention_steer_csv_path, device=f"cuda:{args.device}" if args.device > -1 else 'cpu')
     tokenizer = AutoTokenizer.from_pretrained(args.model)
-    heads_per_gpu = len(model.encoder.block) // args.ngpu
-    device_map = {
-        gpu: list(
-            range(
-                0 + (gpu * heads_per_gpu),
-                (0 + (gpu * heads_per_gpu)) + heads_per_gpu,
-            )
-        )
-        for gpu in range(args.ngpu)
-    }
-    model.parallelize(device_map)
+    if args.intervention_steer_csv_path:
+        # Get the base filename without extension from the CSV path
+        base_name = os.path.splitext(os.path.basename(args.intervention_steer_csv_path))[0]
+        args.model = f"{args.model}_{base_name}"
+        print(f"testing {args.model}")
+    # Modified device mapping for causal models
+    # heads_per_gpu = len(model.transformer.h) // args.ngpu
+    # device_map = {
+    #     gpu: list(
+    #         range(
+    #             0 + (gpu * heads_per_gpu),
+    #             (0 + (gpu * heads_per_gpu)) + heads_per_gpu,
+    #         )
+    #     )
+    #     for gpu in range(args.ngpu)
+    # }
+    # model.parallelize(device_map)
+    # replaced the above parallelize code with just putting the model on the gpu. The model is small enough to fit on one gpu anyways.
     model.eval()
     subjects = sorted(
         [
@@ -176,7 +188,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--ntrain", "-k", type=int, default=5)
-    parser.add_argument("--ngpu", "-g", type=int, default=2)
+    # parser.add_argument("--ngpu", "-g", type=int, default=2)
     parser.add_argument("--data_dir", "-d", type=str, default="data")
     parser.add_argument("--save_dir", "-s", type=str, default="results")
     parser.add_argument(
@@ -185,5 +197,8 @@ if __name__ == "__main__":
         type=str,
         default="google/flan-t5-small",
     )
+    parser.add_argument("--device", "-g", type=int, default=0)
+
+    parser.add_argument('--intervention_steer_csv_path', '-i', type=str, default='')
     args = parser.parse_args()
     main(args)
