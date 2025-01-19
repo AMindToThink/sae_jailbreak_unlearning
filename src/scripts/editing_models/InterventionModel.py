@@ -1,7 +1,7 @@
 from .arena_imports import *
 
 from transformer_lens import loading_from_pretrained
-
+from transformers.modeling_outputs import CausalLMOutputWithPast
 gemmascope_sae_release = "gemma-scope-2b-pt-res-canonical"
 gemmascope_sae_id = "layer_20/width_16k/canonical"
 
@@ -22,10 +22,13 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
     def __init__(self, fwd_hooks:list, device:str='cuda:0'):
         # config = AutoConfig.from_pretrained("google/gemma-2b")
         base_name = "gemma-2-2b"
-        config = loading_from_pretrained.get_pretrained_model_config(base_name, device=device)
-        super().__init__(config)
+        trueconfig = loading_from_pretrained.get_pretrained_model_config(base_name, device=device)
+        super().__init__(trueconfig)
         self.model = HookedSAETransformer.from_pretrained(base_name, device=device)
+        
         self.fwd_hooks = fwd_hooks
+        self.device = device  # Add device attribute
+        self.to(device)  # Ensure model is on the correct device
     @classmethod
     def from_csv(cls, csv_path: str, device: str = 'cuda:0') -> 'InterventionGemmaModel':
         """
