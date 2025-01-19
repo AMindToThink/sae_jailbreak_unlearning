@@ -4,7 +4,6 @@ from transformer_lens import loading_from_pretrained
 
 gemmascope_sae_release = "gemma-scope-2b-pt-res-canonical"
 gemmascope_sae_id = "layer_20/width_16k/canonical"
-gemma_2_2b_sae = SAE.from_pretrained(gemmascope_sae_release, gemmascope_sae_id, device=str(device))[0]
 
 def steering_hook(
     activations: Float[Tensor, "batch pos d_in"],
@@ -79,7 +78,8 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
 
 if __name__ == '__main__':
     from transformers import AutoTokenizer
-
+    
+    gemma_2_2b_sae = SAE.from_pretrained(gemmascope_sae_release, gemmascope_sae_id, device=str(device))[0]
     # Assuming 'gemma_2_2b' is the model name or path
     tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b")
     latent_idx = 12082 # represents dogs
