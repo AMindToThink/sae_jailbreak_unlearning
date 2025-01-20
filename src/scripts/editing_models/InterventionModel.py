@@ -25,7 +25,7 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
         trueconfig = loading_from_pretrained.get_pretrained_model_config(base_name, device=device)
         super().__init__(trueconfig)
         self.model = HookedSAETransformer.from_pretrained(base_name, device=device)
-        
+        self.model.eval()
         self.fwd_hooks = fwd_hooks
         self.device = device  # Add device attribute
         self.to(device)  # Ensure model is on the correct device
@@ -55,6 +55,7 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
         hooks = []
         for _, row in df.iterrows():
             sae = SAE.from_pretrained(gemmascope_sae_release, row['sae_id'], device=str(device))[0]
+            sae.eval()
             hook = partial(
                 steering_hook,
                 sae=sae,
@@ -74,9 +75,9 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
             args = args[1:]  # Remove the first argument
         else:
             input_tensor = None
-    
-        with self.model.hooks(fwd_hooks=self.fwd_hooks):
-            output = self.model.forward(input_tensor, *args, **kwargs)
+        with t.no_grad(): # I don't know why this no grad is necessary; I tried putting everything into eval mode. And yet, this is necessary to prevent CUDA out of memory exceptions.
+            with self.model.hooks(fwd_hooks=self.fwd_hooks):
+                output = self.model.forward(input_tensor, *args, **kwargs)
         return output
 
 if __name__ == '__main__':
