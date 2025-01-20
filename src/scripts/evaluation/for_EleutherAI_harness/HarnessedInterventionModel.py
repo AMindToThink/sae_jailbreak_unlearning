@@ -1,13 +1,17 @@
-
 from scripts.editing_models.InterventionModel import InterventionGemmaModel
 from lm_eval.models.huggingface import HFLM
 from lm_eval.api.registry import register_model
+
+from transformers import AutoModelForCausalLM
 class HarnessedInterventionModel(HFLM):
     def __init__(self, csv_path, device="cuda"):
-        interventionGemma = InterventionGemmaModel.from_csv(csv_path, device=device)
+        self.swap_in_model = InterventionGemmaModel.from_csv(csv_path, device=device)
         # Initialize other necessary attributes
-        super().__init__(pretrained=interventionGemma, device=device)
-
+        super().__init__(pretrained=AutoModelForCausalLM.from_pretrained("google/gemma-2b"), device=device)
+    
+    def _model_call(self, inputs):
+        # Implement this method to use your model's forward function
+        return self.swap_in_model.forward(inputs)
     # Override other methods as needed, e.g., tokenizer-related methods
 from lm_eval.api.registry import register_model
 
