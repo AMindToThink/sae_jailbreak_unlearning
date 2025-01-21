@@ -1,10 +1,9 @@
 from .arena_imports import *
 
 from transformer_lens import loading_from_pretrained
-
+from transformers.modeling_outputs import CausalLMOutputWithPast
 gemmascope_sae_release = "gemma-scope-2b-pt-res-canonical"
 gemmascope_sae_id = "layer_20/width_16k/canonical"
-gemma_2_2b_sae = SAE.from_pretrained(gemmascope_sae_release, gemmascope_sae_id, device=str(device))[0]
 
 def steering_hook(
     activations: Float[Tensor, "batch pos d_in"],
@@ -23,10 +22,13 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
     def __init__(self, fwd_hooks:list, device:str='cuda:0'):
         # config = AutoConfig.from_pretrained("google/gemma-2b")
         base_name = "gemma-2-2b"
-        config = loading_from_pretrained.get_pretrained_model_config(base_name, device=device)
-        super().__init__(config)
+        trueconfig = loading_from_pretrained.get_pretrained_model_config(base_name, device=device)
+        super().__init__(trueconfig)
         self.model = HookedSAETransformer.from_pretrained(base_name, device=device)
+        self.model.eval()
         self.fwd_hooks = fwd_hooks
+        self.device = device  # Add device attribute
+        self.to(device)  # Ensure model is on the correct device
     @classmethod
     def from_csv(cls, csv_path: str, device: str = 'cuda:0') -> 'InterventionGemmaModel':
         """
@@ -53,6 +55,7 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
         hooks = []
         for _, row in df.iterrows():
             sae = SAE.from_pretrained(gemmascope_sae_release, row['sae_id'], device=str(device))[0]
+            sae.eval()
             hook = partial(
                 steering_hook,
                 sae=sae,
@@ -72,14 +75,15 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
             args = args[1:]  # Remove the first argument
         else:
             input_tensor = None
-    
-        with self.model.hooks(fwd_hooks=self.fwd_hooks):
-            output = self.model.forward(input_tensor, *args, **kwargs)
+        with t.no_grad(): # I don't know why this no grad is necessary; I tried putting everything into eval mode. And yet, this is necessary to prevent CUDA out of memory exceptions.
+            with self.model.hooks(fwd_hooks=self.fwd_hooks):
+                output = self.model.forward(input_tensor, *args, **kwargs)
         return output
 
 if __name__ == '__main__':
     from transformers import AutoTokenizer
-
+    
+    gemma_2_2b_sae = SAE.from_pretrained(gemmascope_sae_release, gemmascope_sae_id, device=str(device))[0]
     # Assuming 'gemma_2_2b' is the model name or path
     tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b")
     latent_idx = 12082 # represents dogs
