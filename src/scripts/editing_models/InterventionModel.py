@@ -1,7 +1,6 @@
 from .arena_imports import *
 
 from transformer_lens import loading_from_pretrained
-from transformers.modeling_outputs import CausalLMOutputWithPast
 gemmascope_sae_release = "gemma-scope-2b-pt-res-canonical"
 gemmascope_sae_id = "layer_20/width_16k/canonical"
 
