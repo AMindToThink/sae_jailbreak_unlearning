@@ -101,7 +101,6 @@ def eval(args, subject, model, tokenizer, dev_df, test_df):
 
 
 def main(args):
-
     model = AutoModelForSeq2SeqLM.from_pretrained(args.model)
     tokenizer = AutoTokenizer.from_pretrained(args.model)
     heads_per_gpu = len(model.encoder.block) // args.ngpu
