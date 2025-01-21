@@ -1,0 +1,51 @@
+latent_idx,description,sae_id,steering_coefficient
+7037,mentions of the coronavirus and related health topics,layer_20/width_16k/canonical,-387.6993197034259
+8235,text related to charitable actions and community support,layer_20/width_16k/canonical,-321.74348492523285
+966,information related to diseases carried by rodents and their ability to transmit viruses.,layer_20/width_16k/canonical,-233.73031908397928
+15013,statistical data related to health incidents and their trends over time,layer_20/width_16k/canonical,-191.3315829850573
+10167,references to the coronavirus and the COVID-19 pandemic,layer_20/width_16k/canonical,-149.7532311046273
+518,references to diseases and health conditions,layer_20/width_16k/canonical,-148.9634341653788
+1556,medical terminology and symptoms associated with respiratory illnesses and infections,layer_20/width_16k/canonical,-133.02034842443325
+6030, references to COVID-related topics,layer_20/width_16k/canonical,-132.72441847293976
+2306,biological or scientific terminology related to viruses and their classifications,layer_20/width_16k/canonical,-132.18015947822042
+1651,references to violence and casualties from attacks or conflicts,layer_20/width_16k/canonical,-122.61198001982723
+8002,references to biological research and experimental methods,layer_20/width_16k/canonical,-121.0520360719203
+10438,attributes related to vaccine efficacy and immunogenicity in children,layer_20/width_16k/canonical,-115.17055324555295
+8869,information related to public health studies and statistics,layer_20/width_16k/canonical,-112.63902315679837
+7932, phrases related to technical explanations or descriptions,layer_20/width_16k/canonical,-104.11275806664814
+12452,numerical values or statistics related to time and events,layer_20/width_16k/canonical,-103.41803369312413
+450,terms related to quantitative research and analysis methods,layer_20/width_16k/canonical,-103.35464537353523
+3242,information related to corruption and bribery involving public officials,layer_20/width_16k/canonical,-102.0786131715679
+11643,references to bacterial infections or antibiotic treatments,layer_20/width_16k/canonical,-97.21176518289164
+1828,terms related to severity and serious conditions,layer_20/width_16k/canonical,-96.12708113412555
+4482,topics related to humanitarian crises and social issues,layer_20/width_16k/canonical,-95.51153319573702
+5708,references to diseases and medical conditions,layer_20/width_16k/canonical,-89.92776063612824
+3814,phrases related to possession or experiences over time,layer_20/width_16k/canonical,-88.60630127195249
+5128,financial figures and monetary values,layer_20/width_16k/canonical,-84.98200949186419
+13296,"numerical information or values related to studies, statistics, or significant dates",layer_20/width_16k/canonical,-83.34683864042914
+6456,terms related to human rights and humanitarian issues,layer_20/width_16k/canonical,-83.03172659111699
+13686,terms related to various medical symptoms and conditions,layer_20/width_16k/canonical,-82.71541410190895
+6692,terms and concepts related to technology and engineering systems,layer_20/width_16k/canonical,-82.31831428507037
+3820,phrases related to global economic influences and inter-country relations,layer_20/width_16k/canonical,-82.07913223680441
+9669,"terms linked to specific regulatory or legislative frameworks, particularly in taxation and healthcare",layer_20/width_16k/canonical,-81.8392511620068
+5746,references to education and professional development activities,layer_20/width_16k/canonical,-80.22171512439384
+7971, references to specific scientific articles and researchers,layer_20/width_16k/canonical,-79.89427818591062
+6474,terms related to health risks and medical conditions,layer_20/width_16k/canonical,-79.64781710040069
+13389,references to specific medical device categories and parameters related to heart function,layer_20/width_16k/canonical,-78.32026050934698
+1548,expressions of personal giving or philanthropic actions,layer_20/width_16k/canonical,-77.56352526984311
+7905,sentence endings and punctuation marks,layer_20/width_16k/canonical,-76.71395391749975
+13700,"references to species comparisons and interactions, particularly between humans and other mammals",layer_20/width_16k/canonical,-76.28562028548772
+15232,references to diseases and viruses transmitted by mosquitoes or ticks,layer_20/width_16k/canonical,-76.02746177765519
+10867,"phrases containing the word ""as"" in various contexts",layer_20/width_16k/canonical,-75.85486799821722
+13403,technical references or terminologies related to scientific concepts and entities,layer_20/width_16k/canonical,-75.42165561503076
+16138,"instances of medical conditions, emergency situations, and treatments involving critical care or interventions",layer_20/width_16k/canonical,-75.42165561503076
+9521, phrases indicating numerical quantities and dimensions in various contexts,layer_20/width_16k/canonical,-74.89849330750727
+9166," references to figures, files, and declarations of conflicts of interest",layer_20/width_16k/canonical,-73.12759292138692
+6884,terms related to coexistence and variation in biological or emotional contexts,layer_20/width_16k/canonical,-72.58789851275824
+11264,language related to causes and effects,layer_20/width_16k/canonical,-72.40710645490971
+4824,terms related to health and healthcare,layer_20/width_16k/canonical,-71.95313892984774
+8388, connections and transitions in narrative or data descriptions,layer_20/width_16k/canonical,-71.77074791676695
+12854, terms related to clinical trials and medical treatments,layer_20/width_16k/canonical,-71.58789221094754
+9235,references to the impact of the COVID-19 pandemic,layer_20/width_16k/canonical,-71.22077239509916
+3113,mentions of technology components and troubleshooting in a technical context.,layer_20/width_16k/canonical,-71.22077239509916
+10192,modal verbs indicating possibility or necessity,layer_20/width_16k/canonical,-70.94418582636439
