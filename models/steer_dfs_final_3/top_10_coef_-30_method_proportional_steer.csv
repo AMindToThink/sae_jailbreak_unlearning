@@ -1,0 +1,11 @@
+latent_idx,steering_coefficient,sae_id,description
+7037,-153.83861578878012,layer_3/width_16k/canonical,mentions of the coronavirus and related health topics
+8235,-121.9487983326454,layer_3/width_16k/canonical,text related to charitable actions and community support
+966,-113.35116324434232,layer_3/width_16k/canonical,information related to diseases carried by rodents and their ability to transmit viruses.
+2306,-85.8235616650638,layer_3/width_16k/canonical,biological or scientific terminology related to viruses and their classifications
+15013,-81.19788219822442,layer_3/width_16k/canonical,statistical data related to health incidents and their trends over time
+6720,-75.99165339931395,layer_3/width_16k/canonical,references to genetic engineering and cloning processes
+10438,-70.5182980911338,layer_3/width_16k/canonical,attributes related to vaccine efficacy and immunogenicity in children
+15232,-68.59881724441458,layer_3/width_16k/canonical,references to diseases and viruses transmitted by mosquitoes or ticks
+8002,-67.07457055349623,layer_3/width_16k/canonical,references to biological research and experimental methods
+8595,-61.63025482524782,layer_3/width_16k/canonical,terms related to HIV and its clinical aspects in specific populations

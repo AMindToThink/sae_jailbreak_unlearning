@@ -1,0 +1,21 @@
+latent_idx,steering_coefficient,sae_id,description
+7037,-98.81742424558092,layer_3/width_16k/canonical,mentions of the coronavirus and related health topics
+8235,-78.33316803643979,layer_3/width_16k/canonical,text related to charitable actions and community support
+966,-72.81052244012196,layer_3/width_16k/canonical,information related to diseases carried by rodents and their ability to transmit viruses.
+2306,-55.12831261409413,layer_3/width_16k/canonical,biological or scientific terminology related to viruses and their classifications
+15013,-52.157031782197315,layer_3/width_16k/canonical,statistical data related to health incidents and their trends over time
+6720,-48.81283814587483,layer_3/width_16k/canonical,references to genetic engineering and cloning processes
+10438,-45.29705720386582,layer_3/width_16k/canonical,attributes related to vaccine efficacy and immunogenicity in children
+15232,-44.06408879610305,layer_3/width_16k/canonical,references to diseases and viruses transmitted by mosquitoes or ticks
+8002,-43.08499696575141,layer_3/width_16k/canonical,references to biological research and experimental methods
+8595,-39.5878694448962,layer_3/width_16k/canonical,terms related to HIV and its clinical aspects in specific populations
+518,-38.81442100415913,layer_3/width_16k/canonical,references to diseases and health conditions
+6525,-37.67065748858241,layer_3/width_16k/canonical,"information related to specific strains and lineages of viruses, particularly in the context of HIV"
+10167,-37.185935084266696,layer_3/width_16k/canonical,references to the coronavirus and the COVID-19 pandemic
+7932,-35.678364102332715,layer_3/width_16k/canonical, phrases related to technical explanations or descriptions
+1556,-34.977225796469654,layer_3/width_16k/canonical,medical terminology and symptoms associated with respiratory illnesses and infections
+12225,-34.68707177010685,layer_3/width_16k/canonical,technical terms related to clinical trials and gene therapies
+1651,-33.715781159838414,layer_3/width_16k/canonical,references to violence and casualties from attacks or conflicts
+6030,-32.9729367605725,layer_3/width_16k/canonical, references to COVID-related topics
+14012,-32.84203131843123,layer_3/width_16k/canonical,scientific terminology related to T cells and their markers
+13389,-30.15136629127117,layer_3/width_16k/canonical,references to specific medical device categories and parameters related to heart function

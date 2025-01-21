@@ -1,0 +1,31 @@
+latent_idx,steering_coefficient,sae_id,description
+7037,-9.73272802674036,layer_3/width_16k/canonical,mentions of the coronavirus and related health topics
+8235,-7.715192191985451,layer_3/width_16k/canonical,text related to charitable actions and community support
+966,-7.1712556546045905,layer_3/width_16k/canonical,information related to diseases carried by rodents and their ability to transmit viruses.
+2306,-5.4296990368082,layer_3/width_16k/canonical,biological or scientific terminology related to viruses and their classifications
+15013,-5.1370515766188936,layer_3/width_16k/canonical,statistical data related to health incidents and their trends over time
+6720,-4.807675179899687,layer_3/width_16k/canonical,references to genetic engineering and cloning processes
+10438,-4.461398802313363,layer_3/width_16k/canonical,attributes related to vaccine efficacy and immunogenicity in children
+15232,-4.339961249473538,layer_3/width_16k/canonical,references to diseases and viruses transmitted by mosquitoes or ticks
+8002,-4.2435285143484665,layer_3/width_16k/canonical,references to biological research and experimental methods
+8595,-3.8990893499484227,layer_3/width_16k/canonical,terms related to HIV and its clinical aspects in specific populations
+518,-3.822910848293772,layer_3/width_16k/canonical,references to diseases and health conditions
+6525,-3.7102592657514903,layer_3/width_16k/canonical,"information related to specific strains and lineages of viruses, particularly in the context of HIV"
+10167,-3.662517975531781,layer_3/width_16k/canonical,references to the coronavirus and the COVID-19 pandemic
+7932,-3.5140342596265315,layer_3/width_16k/canonical, phrases related to technical explanations or descriptions
+1556,-3.444977729442789,layer_3/width_16k/canonical,medical terminology and symptoms associated with respiratory illnesses and infections
+12225,-3.4163998723896167,layer_3/width_16k/canonical,technical terms related to clinical trials and gene therapies
+1651,-3.3207354952128147,layer_3/width_16k/canonical,references to violence and casualties from attacks or conflicts
+6030,-3.2475712475162273,layer_3/width_16k/canonical, references to COVID-related topics
+14012,-3.2346781056912097,layer_3/width_16k/canonical,scientific terminology related to T cells and their markers
+13389,-2.9696690638108056,layer_3/width_16k/canonical,references to specific medical device categories and parameters related to heart function
+450,-2.9438489094947355,layer_3/width_16k/canonical,terms related to quantitative research and analysis methods
+6692,-2.927973086013087,layer_3/width_16k/canonical,terms and concepts related to technology and engineering systems
+397,-2.871436768860914,layer_3/width_16k/canonical,technical terms related to chemical and biological properties of materials
+2468,-2.8245967891655708,layer_3/width_16k/canonical, classifications of medical conditions in veterinary practice
+8869,-2.772042896299577,layer_3/width_16k/canonical,information related to public health studies and statistics
+5708,-2.770012838981302,layer_3/width_16k/canonical,references to diseases and medical conditions
+9669,-2.7624595649517176,layer_3/width_16k/canonical,"terms linked to specific regulatory or legislative frameworks, particularly in taxation and healthcare"
+12452,-2.7234940283986293,layer_3/width_16k/canonical,numerical values or statistics related to time and events
+9571,-2.696806997880701,layer_3/width_16k/canonical,phrases related to the synthesis and functioning of protein complexes within cells
+8859,-2.695614775453789,layer_3/width_16k/canonical,terminology related to virus behaviors and characteristics

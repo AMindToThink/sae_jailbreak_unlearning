@@ -1,0 +1,6 @@
+latent_idx,steering_coefficient,sae_id,description
+7037,-5,layer_3/width_16k/canonical,mentions of the coronavirus and related health topics
+8235,-5,layer_3/width_16k/canonical,text related to charitable actions and community support
+966,-5,layer_3/width_16k/canonical,information related to diseases carried by rodents and their ability to transmit viruses.
+2306,-5,layer_3/width_16k/canonical,biological or scientific terminology related to viruses and their classifications
+15013,-5,layer_3/width_16k/canonical,statistical data related to health incidents and their trends over time
