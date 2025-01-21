@@ -1,0 +1,21 @@
+latent_idx,description,sae_id,steering_coefficient
+7037,mentions of the coronavirus and related health topics,layer_20/width_16k/canonical,-78.59582395803042
+8235,text related to charitable actions and community support,layer_20/width_16k/canonical,-65.22501592257336
+966,information related to diseases carried by rodents and their ability to transmit viruses.,layer_20/width_16k/canonical,-47.38266506743212
+15013,statistical data related to health incidents and their trends over time,layer_20/width_16k/canonical,-38.78743822766623
+10167,references to the coronavirus and the COVID-19 pandemic,layer_20/width_16k/canonical,-30.35852267692676
+518,references to diseases and health conditions,layer_20/width_16k/canonical,-30.19841215301031
+1556,medical terminology and symptoms associated with respiratory illnesses and infections,layer_20/width_16k/canonical,-26.966371505630065
+6030, references to COVID-related topics,layer_20/width_16k/canonical,-26.906379503608285
+2306,biological or scientific terminology related to viruses and their classifications,layer_20/width_16k/canonical,-26.796045329771566
+1651,references to violence and casualties from attacks or conflicts,layer_20/width_16k/canonical,-24.856348997866785
+8002,references to biological research and experimental methods,layer_20/width_16k/canonical,-24.540111455825507
+10438,attributes related to vaccine efficacy and immunogenicity in children,layer_20/width_16k/canonical,-23.347795747902786
+8869,information related to public health studies and statistics,layer_20/width_16k/canonical,-22.834594710169693
+7932, phrases related to technical explanations or descriptions,layer_20/width_16k/canonical,-21.10611906941394
+12452,numerical values or statistics related to time and events,layer_20/width_16k/canonical,-20.965282003714123
+450,terms related to quantitative research and analysis methods,layer_20/width_16k/canonical,-20.952431691747584
+3242,information related to corruption and bribery involving public officials,layer_20/width_16k/canonical,-20.693749777146028
+11643,references to bacterial infections or antibiotic treatments,layer_20/width_16k/canonical,-19.707124554174005
+1828,terms related to severity and serious conditions,layer_20/width_16k/canonical,-19.487233436974943
+4482,topics related to humanitarian crises and social issues,layer_20/width_16k/canonical,-19.362447307764494
