@@ -16,7 +16,9 @@ def steering_hook(
     Steers the model by returning a modified activations tensor, with some multiple of the steering vector added to all
     sequence positions.
     """
-    return activations + steering_coefficient * sae.W_dec[latent_idx]
+    z = sae.encode(activations)
+    z[latent_idx] = steering_coefficient
+    return sae.decode(z)
 
 class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific model class
     def __init__(self, fwd_hooks:list, device:str='cuda:0'):
@@ -56,11 +58,12 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
         for _, row in df.iterrows():
             sae = SAE.from_pretrained(gemmascope_sae_release, row['sae_id'], device=str(device))[0]
             sae.eval()
+            sae.use_error_term = True
             hook = partial(
                 steering_hook,
                 sae=sae,
                 latent_idx=int(row['latent_idx']),
-                steering_coefficient=float(row['steering_coefficient'])
+                steering_coefficient=float(row['steering_coefficient']),
             )
             hooks.append((sae.cfg.hook_name, hook))
         
