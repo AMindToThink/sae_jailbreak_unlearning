@@ -1,0 +1,21 @@
+latent_idx,hook_action,steering_coefficient,sae_id,sae_release,description
+11766,clamp,-76.50604107332072,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,mentions of the coronavirus pandemic and related medical terms
+9723,clamp,-41.72096539076943,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral RNA and its properties
+4788,clamp,-41.02597138990756,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to viral infections and their impact on health
+1709,clamp,-32.88814736221969,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms associated with epidemiological factors in disease transmission
+9186,clamp,-26.320682277981764,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to respiratory health conditions and treatments
+16246,clamp,-23.150961268603197,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to disease cases and their statistics
+7995,clamp,-21.457011667215884,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, words and phrases related to pandemics and health crises
+8336,clamp,-18.046032935714795,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to vaccines and immunization programs
+15218,clamp,-17.45265306982483,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,technical terms and concepts related to electrical engineering and telecommunications
+10986,clamp,-17.230931268819162,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, references to significant historical events or notable figures
+5107,clamp,-17.065198516844895,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to drug resistance and bacterial infections
+14050,clamp,-16.477081196429243,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,"references to mental health, particularly during the COVID-19 pandemic"
+5745,clamp,-16.416092407764737,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, numeric values
+9216,clamp,-16.211139397405123,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical," numerical representations, particularly related to counts or statistics"
+14459,clamp,-16.18017253169369,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,numbers or numerical expressions
+3088,clamp,-15.951245369543638,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to global or international contexts
+13505,clamp,-15.867180250067092,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, terms related to diseases and medical conditions
+7080,clamp,-15.75085813313438,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to HIV/AIDS and coronavirus
+7005,clamp,-15.580112080071473,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms and phrases related to breathing and respiratory functions
+5964,clamp,-15.515597881297964,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,"numeric values, particularly those indicating quantities or measurements"
