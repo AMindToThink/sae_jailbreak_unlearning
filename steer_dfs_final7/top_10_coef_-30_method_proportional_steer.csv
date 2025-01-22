@@ -1,0 +1,11 @@
+latent_idx,steering_coefficient,sae_id,sae_release,description
+11766,-115.66594788226648,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,mentions of the coronavirus pandemic and related medical terms
+9723,-63.075999499984626,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral RNA and its properties
+4788,-62.025270188228234,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to viral infections and their impact on health
+1709,-49.722070118582465,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms associated with epidemiological factors in disease transmission
+9186,-39.793023163662085,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to respiratory health conditions and treatments
+16246,-35.000868453673334,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to disease cases and their statistics
+7995,-32.43986433477668,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, words and phrases related to pandemics and health crises
+8336,-27.282963224089006,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to vaccines and immunization programs
+15218,-26.385859627045754,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,technical terms and concepts related to electrical engineering and telecommunications
+10986,-26.050648682658945,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, references to significant historical events or notable figures

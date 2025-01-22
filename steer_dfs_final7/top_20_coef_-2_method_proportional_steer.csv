@@ -1,0 +1,21 @@
+latent_idx,steering_coefficient,sae_id,sae_release,description
+11766,-7.650604107332072,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,mentions of the coronavirus pandemic and related medical terms
+9723,-4.172096539076943,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral RNA and its properties
+4788,-4.102597138990757,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to viral infections and their impact on health
+1709,-3.288814736221969,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms associated with epidemiological factors in disease transmission
+9186,-2.6320682277981766,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to respiratory health conditions and treatments
+16246,-2.31509612686032,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to disease cases and their statistics
+7995,-2.1457011667215884,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, words and phrases related to pandemics and health crises
+8336,-1.8046032935714797,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to vaccines and immunization programs
+15218,-1.7452653069824833,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,technical terms and concepts related to electrical engineering and telecommunications
+10986,-1.7230931268819165,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, references to significant historical events or notable figures
+5107,-1.7065198516844895,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to drug resistance and bacterial infections
+14050,-1.6477081196429244,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,"references to mental health, particularly during the COVID-19 pandemic"
+5745,-1.6416092407764737,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, numeric values
+9216,-1.6211139397405123,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical," numerical representations, particularly related to counts or statistics"
+14459,-1.618017253169369,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,numbers or numerical expressions
+3088,-1.5951245369543638,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to global or international contexts
+13505,-1.5867180250067092,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical, terms related to diseases and medical conditions
+7080,-1.5750858133134382,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to HIV/AIDS and coronavirus
+7005,-1.5580112080071473,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms and phrases related to breathing and respiratory functions
+5964,-1.5515597881297967,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,"numeric values, particularly those indicating quantities or measurements"
