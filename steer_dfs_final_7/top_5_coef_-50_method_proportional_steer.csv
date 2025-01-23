@@ -1,0 +1,6 @@
+latent_idx,hook_action,steering_coefficient,sae_id,sae_release,description
+11766,clamp,-194.58229477941666,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,mentions of the coronavirus pandemic and related medical terms
+9723,clamp,-106.11137463469551,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral RNA and its properties
+4788,clamp,-104.34375569051271,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to viral infections and their impact on health
+1709,clamp,-83.64635125546903,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms associated with epidemiological factors in disease transmission
+9186,clamp,-66.9429326881692,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to respiratory health conditions and treatments
