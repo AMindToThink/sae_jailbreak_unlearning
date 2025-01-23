@@ -1,0 +1,3 @@
+latent_idx,steering_coefficient,sae_release,sae_id,url
+2421, 50.0,gemma-scope-2b-pt-res-canonical,layer_10/width_16k/canonical,https://www.neuronpedia.org/gemma-2-2b/11-gemmascope-res-16k/2421
+3914, 20.0,gemma-scope-2b-pt-res-canonical,layer_2/width_16k/canonical,https://www.neuronpedia.org/gemma-2-2b/2-gemmascope-res-16k/3914
