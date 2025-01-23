@@ -15,7 +15,9 @@ def steering_hook(
     Steers the model by returning a modified activations tensor, with some multiple of the steering vector added to all
     sequence positions.
     """
-    return activations + steering_coefficient * sae.W_dec[latent_idx]
+    z = sae.encode(activations)
+    z[latent_idx] = steering_coefficient
+    return sae.decode(z)
 
 class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific model class
     def __init__(self, fwd_hooks:list, device:str='cuda:0'):
@@ -55,11 +57,12 @@ class InterventionGemmaModel(HookedSAETransformer):  # Replace with the specific
         for _, row in df.iterrows():
             sae = SAE.from_pretrained(gemmascope_sae_release, row['sae_id'], device=str(device))[0]
             sae.eval()
+            sae.use_error_term = True
             hook = partial(
                 steering_hook,
                 sae=sae,
                 latent_idx=int(row['latent_idx']),
-                steering_coefficient=float(row['steering_coefficient'])
+                steering_coefficient=float(row['steering_coefficient']),
             )
             hooks.append((sae.cfg.hook_name, hook))
         
@@ -84,7 +87,7 @@ if __name__ == '__main__':
     
     gemma_2_2b_sae = SAE.from_pretrained(gemmascope_sae_release, gemmascope_sae_id, device=str(device))[0]
     # Assuming 'gemma_2_2b' is the model name or path
-    tokenizer = AutoTokenizer.from_pretrained("google/gemma-2b")
+    tokenizer = AutoTokenizer.from_pretrained("google/gemma-2-2b")
     latent_idx = 12082 # represents dogs
     dog_steering_hook = partial(steering_hook, sae=gemma_2_2b_sae, latent_idx=latent_idx, steering_coefficient=240.0)
     my_intervention_model = InterventionGemmaModel(fwd_hooks=[(gemma_2_2b_sae.cfg.hook_name, dog_steering_hook)])
