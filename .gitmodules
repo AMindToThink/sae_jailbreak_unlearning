@@ -9,3 +9,6 @@
 	path = src/scripts/evaluation/lm-evaluation-harness
 	url = https://github.com/AMindToThink/lm-evaluation-harness.git
 	branch = sae_steered
+[submodule "src/scripts/wmdp"]
+	path = src/scripts/wmdp
+	url = https://github.com/centerforaisafety/wmdp.git
