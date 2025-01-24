@@ -12,3 +12,5 @@
 [submodule "src/scripts/wmdp"]
 	path = src/scripts/wmdp
 	url = https://github.com/centerforaisafety/wmdp.git
+[submodule "/home/cs29824/matthew/sae_jailbreak_unlearning/src/scripts/evaluation/lm-evaluation-harness"]
+	branch = main
