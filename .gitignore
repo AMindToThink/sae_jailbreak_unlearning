@@ -1,6 +1,5 @@
 # these are too big to include
 **/MMLU/test/data/
-/rmu_models_results/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
