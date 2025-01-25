@@ -18,11 +18,7 @@ def main():
     parser.add_argument('--fewshot_values', type=str, default='1',
                         help='Comma-separated list of few-shot values to evaluate')
     
-    # Add a flag to capture all remaining arguments
-    parser.add_argument('remaining_args', nargs=argparse.REMAINDER,
-                        help='All other arguments to pass to lm-eval')
-
-    args = parser.parse_args()
+    args, lm_eval_args = parser.parse_known_args()  # Use parse_known_args instead
     
     # Parse few-shot values
     fewshot_values = parse_fewshot_values(args.fewshot_values)
@@ -31,7 +27,7 @@ def main():
     for num_fewshot in tqdm(fewshot_values, desc='Evaluating few-shot values'):
         # Construct command
         command = ['lm-eval']
-        command.extend(args.remaining_args)
+        command.extend(lm_eval_args)  # Use the unknown args directly
         command.extend(['--num_fewshot', str(num_fewshot)])
         
         # Run evaluation
