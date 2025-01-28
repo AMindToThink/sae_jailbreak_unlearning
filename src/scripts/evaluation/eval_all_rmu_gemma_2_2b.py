@@ -2,8 +2,6 @@
 import subprocess
 import argparse
 from tqdm import tqdm
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import shutil
 import torch
 import os
 # Set up argument parser
@@ -13,7 +11,7 @@ parser.add_argument("--output_folder", type=str, required=True, help="Base outpu
 # parser.add_argument("--wmdp_data_dir", type=str, required=True, help="Directory containing WMDP data files")
 parser.add_argument("--verbose", action="store_true", help="Enable verbose logging during unlearning")
 parser.add_argument("--device", type=str, default='0', help="Device to run on (cuda/cpu)")
-parser.add_argument("--hf_user", type=str, default='AMindToThink', help="The huggingface user who uploaded the file.")
+# parser.add_argument("--hf_user", type=str, default='AMindToThink', help="The huggingface user who uploaded the file.")
 args = parser.parse_args()
 os.environ["CUDA_VISIBLE_DEVICES"]= args.device
 # os.environ["WMDP_DATA_DIR"] = args.wmdp_data_dir
@@ -22,9 +20,9 @@ os.environ["CUDA_VISIBLE_DEVICES"]= args.device
 base_model_name = args.model_name.split('/')[-1]
 assert 'gemma-2' in base_model_name, "The layers here match gemma 2 models in particular. If you want to try something else, you'll have to really understand what you are doing."
 
-if args.hf_user != '':
-    from huggingface_hub import login
-    login()
+# if args.hf_user != '':
+#     from huggingface_hub import login
+#     login()
 
 # Add torch memory management settings
 torch.cuda.empty_cache()
