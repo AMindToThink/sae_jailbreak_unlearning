@@ -1,35 +1,66 @@
-from datasets import load_dataset, DatasetDict
+from datasets import load_dataset, DatasetDict, Dataset
 import argparse
 from huggingface_hub import login
 from datasets.features import Value
 
 def load_and_combine_datasets(username):
-    # Load MMLU college_biology dataset
-    mmlu = load_dataset("cais/mmlu", "college_biology")
+    # Load MMLU datasets for different subjects
+    mmlu_subjects = {
+        'bio': 'college_biology',
+        'cs': 'college_computer_science',
+        'chem': 'college_chemistry',
+    }
     
-    # Remove 'subject' column from MMLU dataset
-    mmlu_cleaned = mmlu.remove_columns(['subject'])
+    # Additional MMLU subjects for the combined split
+    extra_mmlu_subjects = [
+        'high_school_us_history',
+        'high_school_geography',
+        'human_aging',
+        'college_computer_science'
+    ]
     
+    mmlu_datasets = {}
+    # mmlu_test_combined = []
+    extra_combined = []
     
+    # Load main MMLU subjects
+    for key, subject in mmlu_subjects.items():
+        dataset = load_dataset("cais/mmlu", subject)
+        cleaned = dataset.remove_columns(['subject'])
+        converted = cleaned.cast_column('answer', Value(dtype='int64'))
+        mmlu_datasets[key] = converted
+        # mmlu_test_combined.extend(converted['test'])
     
-    mmlu_converted = mmlu_cleaned.cast_column('answer', Value(dtype='int64'))
+    # Load and combine extra MMLU subjects
+    for subject in extra_mmlu_subjects:
+        dataset = load_dataset("cais/mmlu", subject)
+        cleaned = dataset.remove_columns(['subject'])
+        converted = cleaned.cast_column('answer', Value(dtype='int64'))
+        extra_combined.extend(converted['test'])
     
-    # Load WMDP dataset and filter for bio subset
-    wmdp = load_dataset("cais/wmdp", "wmdp-bio")
+    # Load WMDP datasets for different classes
+    wmdp_classes = ['wmdp-bio', 'wmdp-cyber', 'wmdp-chem']
+    wmdp_datasets = {
+        class_name: load_dataset("cais/wmdp", class_name)['test']
+        for class_name in wmdp_classes
+    }
     
-    # Print dataset features to debug
-    print("MMLU features:", mmlu_converted['validation'].features)
-    print("WMDP features:", wmdp['test'].features)
+    # Convert extra_combined to a Dataset
+    extra_combined_dataset = Dataset.from_list(extra_combined)
     
-    # Create a new DatasetDict with MMLU as validation and WMDP as test
+    # Create a new DatasetDict with all splits
     combined_dataset = DatasetDict({
-        'mmlu_test':mmlu_converted['test'],
-        'mmlu_validation': mmlu_converted['validation'],
-        'wmdp_test': wmdp['test']
+        'mmlu_biology': mmlu_datasets['bio']['test'],
+        'mmlu_computer_science': mmlu_datasets['cs']['test'],
+        'mmlu_chemistry': mmlu_datasets['chem']['test'],
+        'mmlu_mmlu_high_school_us_history_and_mmlu_high_school_geography_and_mmlu_human_aging_and_mmlu_college_computer_science_combined': extra_combined_dataset,  # New combined split
+        'wmdp_bio': wmdp_datasets['wmdp-bio'],
+        'wmdp_cyber': wmdp_datasets['wmdp-cyber'],
+        'wmdp_chem': wmdp_datasets['wmdp-chem']
     })
     
     # Save locally and push to hub
-    dataset_name = f"{username}/mmlu_wmdp_bio_combined"
+    dataset_name = f"{username}/mmlu_wmdp_combined"
     combined_dataset.push_to_hub(dataset_name, private=True)
     
     return combined_dataset
@@ -46,5 +77,9 @@ if __name__ == "__main__":
     print("Creating combined dataset...")
     combined_dataset = load_and_combine_datasets(args.username)
     print("Dataset created and uploaded successfully!")
-    print(f"Validation set (MMLU biology) size: {len(combined_dataset['mmlu_validation'])}")
-    print(f"Test set (WMDP bio) size: {len(combined_dataset['wmdp_test'])}")
+    print(f"MMLU biology validation set size: {len(combined_dataset['mmlu_biology'])}")
+    print(f"MMLU computer science validation set size: {len(combined_dataset['mmlu_computer_science'])}")
+    print(f"MMLU chemistry validation set size: {len(combined_dataset['mmlu_chemistry'])}")
+    print(f"WMDP bio test set size: {len(combined_dataset['wmdp_bio'])}")
+    print(f"WMDP cyber test set size: {len(combined_dataset['wmdp_cyber'])}")
+    print(f"WMDP chem test set size: {len(combined_dataset['wmdp_chem'])}")
