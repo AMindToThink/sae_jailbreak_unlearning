@@ -18,8 +18,8 @@
     matplotlib = "^3.9.0"
     peft = "^0.11.1"
     bitsandbytes = "^0.43.1"
-    sae-lens = {path = "../GemmaSAELens"}
-    lm-eval = {path = "/root/lm-evaluation-harness"}
+    sae-lens = {git = "https://github.com/jbloomAus/SAELens.git"}
+    lm-eval = {path = "../evaluation/lm-evaluation-harness"}
     nnsight = "^0.2.21"
 
     [tool.poetry.group.dev.dependencies]

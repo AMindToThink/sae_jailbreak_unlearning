@@ -27,6 +27,7 @@ all_permutations = list(permutations([0, 1, 2, 3]))
 
 def calculate_MCQ_metrics(
     model, 
+    tokenizer=None,
     dataset_name='wmdp-bio',
     target_metric=None,
     question_subset=None, 
@@ -44,6 +45,7 @@ def calculate_MCQ_metrics(
     Parameters:
     ----------
     model : object
+    tokenizer : object, optional - Tokenizer for Hugging Face models
     dataset_name : str, default='wmdp-bio' - Or the dataset_name of MMLU
     target_metric : str, optional - Name of the metric used to select a subset of questions
     question_subset : list of int, optional - A list of indices specifying the subset of questions to be used
@@ -78,8 +80,19 @@ def calculate_MCQ_metrics(
     # Select subset of questions            
     assert target_metric in [None, 'correct', 'correct-iff-question', 'correct_no_tricks', 'all'], "target_metric not recognised"
     assert split in ['all', 'train', 'test'], "split not recognised"
-    if target_metric is not None:
+    if hasattr(model, 'cfg'):
+        # TransformerLens model
         model_name = model.cfg.model_name
+    elif hasattr(model, 'config'):
+        # Hugging Face model
+        model_name = model.config.name_or_path
+    else:
+        raise ValueError("Model must be either a TransformerLens or Hugging Face model")
+    
+    if target_metric is not None:
+        # Get model name - handle both TransformerLens and HF models
+        
+
         full_dataset_name = f'mmlu-{dataset_name.replace("_", "-")}' if dataset_name != 'wmdp-bio' else dataset_name
         question_subset_file = f'../data/question_ids/{model_name}/{split}/{full_dataset_name}_{target_metric}.csv'
                     
@@ -93,7 +106,7 @@ def calculate_MCQ_metrics(
         choices_list = [choices_list[i] for i in question_subset if i < len(choices_list)]
         
     # changing prompt_format
-    if model.cfg.model_name in ['gemma-2-9b-it', 'gemma-2-2b-it']:
+    if model_name in ['gemma-2-9b-it', 'gemma-2-2b-it']:
         prompt_format = 'GEMMA_INST_FORMAT'
         
     if permutations is None:
@@ -119,14 +132,14 @@ def calculate_MCQ_metrics(
     if isinstance(model, HookedTransformer):
         output_probs = get_output_probs_abcd(model, prompts, batch_size=batch_size, n_batches=n_batches, verbose=verbose)
     else:
-        output_probs = get_output_probs_abcd_hf(model, model.tokenizer, prompts, batch_size=batch_size, n_batches=n_batches, verbose=verbose)
-    
+        output_probs = get_output_probs_abcd_hf(model, tokenizer or model.tokenizer, prompts, batch_size=batch_size, n_batches=n_batches, verbose=verbose)
+    device = model.device
     predicted_answers = output_probs.argmax(dim=1)
     predicted_probs = output_probs.max(dim=1)[0]
     
     n_predicted_answers = len(predicted_answers)
 
-    actual_answers = torch.tensor(actual_answers)[:n_predicted_answers].to("cuda")
+    actual_answers = torch.tensor(actual_answers)[:n_predicted_answers].to(device)
 
     predicted_prob_of_correct_answers = output_probs[torch.arange(len(actual_answers)), actual_answers]
 
@@ -542,14 +555,13 @@ def calculate_wmdp_bio_metrics_hf(model, tokenizer, question_subset=None, questi
 
 
 def get_output_probs_abcd_hf(model, tokenizer, prompts, batch_size=1, n_batches=100, verbose=True):
-
+    device = model.device
     spaces_and_single_models = ['gemma-2b-it', 'gemma-2b']
-    # answer_strings = ["A", "B", "C", "D"]
     answer_strings = [" A", " B", " C", " D"]
     istart = 0
     
     # answer_tokens = model.to_tokens(answer_strings, prepend_bos=False).flatten()
-    answer_tokens = torch.tensor([tokenizer(x)['input_ids'][1:] for x in answer_strings]).to("cuda")
+    answer_tokens = torch.tensor([tokenizer(x)['input_ids'][1:] for x in answer_strings]).to(device)
     
     with torch.no_grad():
         output_probs = []
@@ -557,10 +569,10 @@ def get_output_probs_abcd_hf(model, tokenizer, prompts, batch_size=1, n_batches=
         for i in tqdm(range(n_batches), disable=not verbose):
             prompt_batch = prompts[i*batch_size:i*batch_size + batch_size]
             current_batch_size = len(prompt_batch)
-            token_batch = [torch.tensor(tokenizer(x)['input_ids'][istart:]).to("cuda") for x in prompt_batch]
-            next_token_indices = torch.tensor([len(x) - 1 for x in token_batch]).to("cuda")
+            token_batch = [torch.tensor(tokenizer(x)['input_ids'][istart:]).to(device) for x in prompt_batch]
+            next_token_indices = torch.tensor([len(x) - 1 for x in token_batch]).to(device)
             max_len = np.max([len(x) for x in token_batch])
-            token_batch = [torch.concatenate((x, torch.full((max_len - len(x),), tokenizer.pad_token_id).to("cuda"))) for x in token_batch]
+            token_batch = [torch.concatenate((x, torch.full((max_len - len(x),), tokenizer.pad_token_id).to(device))) for x in token_batch]
             token_batch = torch.vstack(token_batch)
             
             logits = model(token_batch).logits
