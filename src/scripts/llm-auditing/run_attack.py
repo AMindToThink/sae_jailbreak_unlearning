@@ -92,18 +92,17 @@ def main():
 		login(token=args.hf_token)
 
 	if args.fp16:
-		model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype = torch.float16)
+		model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype=torch.float16, token=args.hf_token)
 		if torch.cuda.is_available():
 			model.to(args.device)
 	elif args.fp8:
-		# set device_map = "cpu" to force cpu
-		model = AutoModelForCausalLM.from_pretrained(args.model_path, load_in_8bit=True, device_map="auto")
+		model = AutoModelForCausalLM.from_pretrained(args.model_path, load_in_8bit=True, device_map="auto", token=args.hf_token)
 	else:
-		model = AutoModelForCausalLM.from_pretrained(args.model_path)
+		model = AutoModelForCausalLM.from_pretrained(args.model_path, token=args.hf_token)
 		if torch.cuda.is_available():
 			model.to(args.device)
 
-	tokenizer = AutoTokenizer.from_pretrained(args.model_path)
+	tokenizer = AutoTokenizer.from_pretrained(args.model_path, token=args.hf_token)
 
 	if args.verbose:
 		print("Model and tokenizer loaded")
@@ -159,7 +158,7 @@ def main():
 				text_output = tokenizer.decode(output)
 				print("Output: ", text_output)
 
-				start_index = text_output.find("[/INST]")
+				start_index = text_output.find("")
 
 				res.append({"Question": obj["question"], "Answer": text_output[start_index+7:-4], **intermediate})
 		
