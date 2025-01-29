@@ -38,6 +38,8 @@ def analyze_permutation_performance(metrics, dataset, n_permutations=24):
     print("\nQuestions with all permutations correct:")
     
     for idx in correct_indices:
+        # Convert numpy.int64 to Python int
+        idx = int(idx)
         question = dataset['test'][idx]['question']
         choices = dataset['test'][idx]['choices']
         print(f"\nQuestion {idx}:")
@@ -66,6 +68,24 @@ model_name = sys.argv[1]
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name).to(int(sys.argv[3]))
 
+def make_deterministic():
+    import random
+    import numpy as np
+    import torch
+    
+    # Set seeds
+    random.seed(0)  # random_seed
+    np.random.seed(1234)  # numpy_seed
+    torch.manual_seed(1234)  # torch_seed
+    torch.cuda.manual_seed_all(1234)
+    
+    # Make PyTorch operations deterministic
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+# Call this before running the model
+make_deterministic()
+
 # Run calculate_MCQ_metrics with all permutations
 metrics = calculate_MCQ_metrics(
     model,
@@ -73,9 +93,9 @@ metrics = calculate_MCQ_metrics(
     dataset_name=task,
     permutations=all_permutations
 )
-
+import pdb;pdb.set_trace()
 # Find and analyze questions with all permutations correct
 correct_indices = analyze_permutation_performance(metrics, dataset)
 
 # Save the indices for future use
-save_correct_indices(correct_indices, 'gemma_2_2b_all_perms_correct.csv')
+save_correct_indices(correct_indices, 'gemma_2_2b_all_perms_correct_deterministic.csv')
