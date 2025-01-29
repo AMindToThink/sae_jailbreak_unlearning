@@ -1,5 +1,6 @@
 # these are too big to include
 **/MMLU/test/data/
+/results/rmu_models_results/cyber_models_results/models/gemma-2-2b_RMU_cyber-forget-corpus_s200_a500_layer3
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
