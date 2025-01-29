@@ -16,6 +16,7 @@ def parse_args():
 	parser.add_argument("--model_path", type=str, required=True, help="Path to model")
 	parser.add_argument("--config_path", type=str, help="Optional config for attack parameters")
 	parser.add_argument("--device", type=str, default="cuda:0", help="Device to run model on (e.g. cuda:0, cpu)")
+	parser.add_argument("--hf_token", type=str, help="HuggingFace token for accessing gated models")
 	
 	parser.add_argument("-v", "--verbose", action="store_true", help="Show tqdm for runs")
 	parser.add_argument("-a", "--attack_type", type=str, default = "greedy", choices = ["greedy", "causal", "greedyc"], help = "Type of attack to run")
@@ -85,6 +86,10 @@ def prompt(attack, suffix = None):
 
 def main():
 	args = parse_args()
+
+	if args.hf_token:
+		from huggingface_hub import login
+		login(token=args.hf_token)
 
 	if args.fp16:
 		model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype = torch.float16)
