@@ -1,9 +1,9 @@
 {
     "greedyc": {
-        "b": 64,
-        "k": 128,
-        "t": 500,
-        "suffix_length": 64,
+        "b": 32,
+        "k": 64,
+        "t": 200,
+        "suffix_length": 32,
         "eval_log": true,
         "log_freq": 50,
         "in_file": "configs/wmdp_short_wmdp-bio_1.json",
