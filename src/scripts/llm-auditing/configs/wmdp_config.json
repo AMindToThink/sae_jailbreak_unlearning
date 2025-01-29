@@ -1,0 +1,14 @@
+{
+    "greedyc": {
+        "b": 64,
+        "k": 128,
+        "t": 500,
+        "suffix_length": 64,
+        "eval_log": true,
+        "log_freq": 50,
+        "in_file": "configs/wmdp_short.json",
+        "out_file": "wmdp_greedycattack_results.jsonl",
+        "instruct": ".The following are multiple choice questions (with answers) about biology.\n\n",
+        "model_dtype": "float32"
+    }
+}

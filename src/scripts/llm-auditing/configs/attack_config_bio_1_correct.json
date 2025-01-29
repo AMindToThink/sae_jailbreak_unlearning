@@ -1,0 +1,14 @@
+{
+    "greedyc": {
+        "b": 64,
+        "k": 128,
+        "t": 500,
+        "suffix_length": 64,
+        "eval_log": true,
+        "log_freq": 50,
+        "in_file": "configs/wmdp_short_wmdp-bio_1.json",
+        "out_file": "results/greedyc_wmdp-bio_1_correct.jsonl",
+        "instruct": ".The following are questions (with answers) about biology.\n\n",
+        "model_dtype": "float32"
+    }
+}
