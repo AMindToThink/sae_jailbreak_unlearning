@@ -10,6 +10,7 @@ from torch import Tensor
 from transformer_lens import loading_from_pretrained
 from transformer_lens.hook_points import HookPoint
 from transformers import AutoTokenizer
+import torch.utils.checkpoint as checkpoint
 
 def steering_hook_add_scaled_one_hot(
     activations,#: Float[Tensor],  # Float[Tensor, "batch pos d_in"], Either jaxtyping or lm-evaluation-harness' precommit git script hate a type hint here.
@@ -251,30 +252,64 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
         return cls(base_name=base_name, device=device, model=model, dtype=dtype)
 
     def forward(self, *args, **kwargs):
-        # Handle both input_ids and direct tensor inputs
-        if "input_ids" in kwargs:
-            input_tensor = kwargs.pop("input_ids")
-            kwargs["input"] = input_tensor
-        elif "inputs_embeds" in kwargs:
-            input_embeds = kwargs.pop("inputs_embeds")
-            kwargs["input"] = input_embeds
-            kwargs["start_at_layer"] = 0
+        torch.cuda.empty_cache()
+        
+        # Set up kwargs for the forward pass
+        base_kwargs = kwargs.copy()
+        base_kwargs["start_at_layer"] = 0
+        
+        # Remove inputs_embeds from kwargs if present and store it
+        input_embeds = base_kwargs.pop('inputs_embeds', None)
+        # Remove input_ids from kwargs if present and store it
+        input_ids = base_kwargs.pop('input_ids', None)
+        
+        # Preserve any additional args after the first one
+        remaining_args = args[1:] if len(args) > 1 else tuple()
+        
+        def forward_fn(input_tensor_or_embeds):
+            self.model.train()
+            for sae in self.model.acts_to_saes.values():
+                sae.train()
+                
+            if input_tensor_or_embeds.dtype == torch.long:
+                input_embeds = self.model.embed_tokens(input_tensor_or_embeds)
+            else:
+                input_embeds = input_tensor_or_embeds
+                
+            forward_kwargs = base_kwargs.copy()
+            forward_kwargs["input"] = input_embeds
+            
+            output = self.model.forward(*remaining_args, **forward_kwargs)
+            
+            self.model.eval()
+            for sae in self.model.acts_to_saes.values():
+                sae.eval()
+                
+            return output
+        
+        # Determine input tensor based on provided arguments
+        if input_embeds is not None:
+            input_tensor = input_embeds
+        elif input_ids is not None:
+            input_tensor = input_ids
         elif args:
             input_tensor = args[0]
-            args = args[1:]
-            kwargs["input"] = input_tensor
         else:
             raise ValueError("No input provided to forward pass")
-            
-        with torch.no_grad():# I don't know why this no grad is necessary; I tried putting everything into eval mode. And yet, this is necessary to prevent CUDA out of memory exceptions.
-            output = self.model.forward(*args, **kwargs)
+        
+        with torch.set_grad_enabled(True):
+            with torch.enable_grad():
+                output = checkpoint.checkpoint(forward_fn, input_tensor)
+                
         class OutputWithLogits:
             def __init__(self, logits):
                 self.logits = logits
-    
+                
         return OutputWithLogits(output)
 
     def generate(self, *args, **kwargs):
+        # Attention mask is given as all ones anyways
+        kwargs.pop("attention_mask", None)
         # Handle both input_ids and direct tensor inputs
         if "input_ids" in kwargs:
             input_tensor = kwargs.pop("input_ids")  # Use pop to remove it
@@ -290,7 +325,7 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
 if __name__ == '__main__':
     # Initialize the model and tokenizer
     model_name = 'google/gemma-2-2b'
-    model = InterventionModel(model_name, device="cuda:0")  # or whatever model you're using
+    model = InterventionModel(model_name, device="cuda:0")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     # Create input text and tokenize
@@ -307,10 +342,28 @@ if __name__ == '__main__':
     # You can compare this with regular forward pass
     regular_output = model.forward(input_ids=input_ids)
 
-    # The outputs should be similar (though not exactly the same due to different code paths)
+    # Create a simple loss and backpropagate
+    loss = output.logits.mean()
+    loss.backward()
+
+    # Check gradients
+    print("\nGradient Checks:")
+    print("Embedding matrix has gradient:", model.model.embed_tokens.weight.grad is not None)
+    if model.model.embed_tokens.weight.grad is not None:
+        print("Embedding matrix gradient norm:", model.model.embed_tokens.weight.grad.norm().item())
+        print("Embedding matrix gradient contains non-zeros:", (model.model.embed_tokens.weight.grad != 0).any().item())
+
+    print("\nEmbeddings tensor has gradient:", embeddings.grad is not None)
+    if embeddings.grad is not None:
+        print("Embeddings gradient norm:", embeddings.grad.norm().item())
+        print("Embeddings gradient contains non-zeros:", (embeddings.grad != 0).any().item())
+
+    # Original shape checks
+    print("\nShape Checks:")
     print("Embeddings shape:", embeddings.shape)
     print("Output from inputs_embeds shape:", output.logits.shape)
     print("Output from input_ids shape:", regular_output.logits.shape)
+    
     # Verify outputs are numerically equivalent
     assert torch.allclose(output.logits, regular_output.logits, rtol=1e-4, atol=1e-4), "Outputs from inputs_embeds and input_ids should be equivalent"
     
