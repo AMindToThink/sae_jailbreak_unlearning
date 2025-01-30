@@ -9,6 +9,8 @@ from sae_lens import SAE, HookedSAETransformer
 from torch import Tensor
 from transformer_lens import loading_from_pretrained
 from transformer_lens.hook_points import HookPoint
+from transformers import AutoTokenizer
+
 def steering_hook_add_scaled_one_hot(
     activations,#: Float[Tensor],  # Float[Tensor, "batch pos d_in"], Either jaxtyping or lm-evaluation-harness' precommit git script hate a type hint here.
     hook: HookPoint,
@@ -89,6 +91,7 @@ def clamp_conditional(sae_acts:Tensor, hook:HookPoint, latent_idx:int, value:flo
     """
     mask = sae_acts[:, :, latent_idx] > clamp_value  # Create a boolean mask where values are greater than 0
     sae_acts[:, :, latent_idx][mask] = value  # Replace values conditionally
+    return sae_acts
 
 def clamp_refusal(sae_acts:Tensor, hook:HookPoint, latent_idx:int, value:float, clamp_value:float, refusal_idx:int) -> Tensor:
     """Clamps a specific latent feature in the SAE activations to a fixed value.
@@ -231,12 +234,11 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
         self.device = device  # Add device attribute
         self.to(device)  # Ensure model is on the correct device
         
-    @property
-    def embed_tokens(self):
-        # Create a wrapper module that has a weight attribute matching the W_E tensor
-        wrapper = torch.nn.Module()
-        wrapper.weight = torch.nn.Parameter(self.model.W_E)
-        return wrapper
+        # Replace with nn.Embedding
+        num_embeddings, embedding_dim = self.model.W_E.shape
+        embed_layer = torch.nn.Embedding(num_embeddings, embedding_dim)
+        embed_layer.weight = torch.nn.Parameter(self.model.W_E)
+        self.model.embed_tokens = embed_layer
 
     @classmethod
     def from_dataframe(cls, df, base_name:str, device:str='cuda:0', dtype=torch.float32):
@@ -251,15 +253,27 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
     def forward(self, *args, **kwargs):
         # Handle both input_ids and direct tensor inputs
         if "input_ids" in kwargs:
-            input_tensor = kwargs.pop("input_ids")  # Use pop to remove it
+            input_tensor = kwargs.pop("input_ids")
+            kwargs["input"] = input_tensor
+        elif "inputs_embeds" in kwargs:
+            input_embeds = kwargs.pop("inputs_embeds")
+            kwargs["input"] = input_embeds
+            kwargs["start_at_layer"] = 0
         elif args:
             input_tensor = args[0]
-            args = args[1:]  # Remove the first argument
+            args = args[1:]
+            kwargs["input"] = input_tensor
         else:
-            input_tensor = None
-        with torch.no_grad():  # I don't know why this no grad is necessary; I tried putting everything into eval mode. And yet, this is necessary to prevent CUDA out of memory exceptions.
-            output = self.model.forward(input_tensor, *args, **kwargs)
-        return output
+            raise ValueError("No input provided to forward pass")
+            
+        with torch.no_grad():# I don't know why this no grad is necessary; I tried putting everything into eval mode. And yet, this is necessary to prevent CUDA out of memory exceptions.
+            output = self.model.forward(*args, **kwargs)
+        class OutputWithLogits:
+            def __init__(self, logits):
+                self.logits = logits
+    
+        return OutputWithLogits(output)
+
     def generate(self, *args, **kwargs):
         # Handle both input_ids and direct tensor inputs
         if "input_ids" in kwargs:
@@ -272,3 +286,31 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
         with torch.no_grad():  # I don't know why this no grad is necessary; I tried putting everything into eval mode. And yet, this is necessary to prevent CUDA out of memory exceptions.
             output = self.model.generate(input_tensor, *args, **kwargs)
         return output
+
+if __name__ == '__main__':
+    # Initialize the model and tokenizer
+    model_name = 'google/gemma-2-2b'
+    model = InterventionModel(model_name, device="cuda:0")  # or whatever model you're using
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    # Create input text and tokenize
+    text = "Hello, world!"
+    input_ids = tokenizer(text, return_tensors="pt").input_ids.to("cuda:0")
+
+    # First, get the embeddings from the model's embedding layer
+    embeddings = model.model.embed_tokens(input_ids)  # Shape: [batch_size, seq_len, hidden_size]
+
+    # Now we can pass these embeddings to the forward method
+    # This will skip the embedding layer and start at layer 0
+    output = model.forward(inputs_embeds=embeddings)
+
+    # You can compare this with regular forward pass
+    regular_output = model.forward(input_ids=input_ids)
+
+    # The outputs should be similar (though not exactly the same due to different code paths)
+    print("Embeddings shape:", embeddings.shape)
+    print("Output from inputs_embeds shape:", output.logits.shape)
+    print("Output from input_ids shape:", regular_output.logits.shape)
+    # Verify outputs are numerically equivalent
+    assert torch.allclose(output.logits, regular_output.logits, rtol=1e-4, atol=1e-4), "Outputs from inputs_embeds and input_ids should be equivalent"
+    
