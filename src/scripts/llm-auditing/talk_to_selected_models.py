@@ -1,7 +1,7 @@
 import pandas as pd
 import random
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from InterventionModelCopy2024_01_29 import hooked_from_csv
+from InterventionModelCopy2024_01_29 import hooked_from_csv, HookedSAETransformer
 from datasets import load_dataset
 import argparse
 from huggingface_hub import login
@@ -26,14 +26,14 @@ print('dataset now dataframe')
 
 # Select 10 random questions
 random_questions = wmpd_df['question'].sample(n=5).tolist()
+# Initialize models and tokenizer
+base_model_name = "google/gemma-2-2b"  # Adjust if using a different base model
+tokenizer = AutoTokenizer.from_pretrained(base_model_name)
 # Function to generate response
 def get_model_response(model, prompt, max_new_tokens=20):
     inputs = tokenizer(prompt, return_tensors="pt").to('cuda:0')
     outputs = model.generate(**inputs, max_new_tokens=max_new_tokens)
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
-# Initialize models and tokenizer
-base_model_name = "google/gemma-2-2b"  # Adjust if using a different base model
-tokenizer = AutoTokenizer.from_pretrained(base_model_name)
 
 def clear_gpu_memory():
     gc.collect()
@@ -56,7 +56,7 @@ def ask_model_questions(model, questions, model_name):
         print(f"\nQuestion {i} to {model_name}: {question}")
         print("-" * 80)
         
-        if isinstance(model, AutoModelForCausalLM):
+        if not isinstance(model, HookedSAETransformer):
             response = get_model_response(model, question)
         else:
             response = model.generate(question, max_new_tokens=20)
