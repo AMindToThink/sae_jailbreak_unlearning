@@ -1,0 +1,11 @@
+latent_idx,hook_action,refuse_id,clamp_value,steering_coefficient,sae_id,sae_release,description
+11766,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,mentions of the coronavirus pandemic and related medical terms
+9723,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral RNA and its properties
+4788,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to viral infections and their impact on health
+1709,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms associated with epidemiological factors in disease transmission
+9186,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to respiratory health conditions and treatments
+3058,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral infections and their biological impact
+13381,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to cybersecurity threats and vulnerabilities
+14050,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,"references to mental health, particularly during the COVID-19 pandemic"
+11078,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,elements related to health and safety regulations regarding public spaces
+16246,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to disease cases and their statistics
