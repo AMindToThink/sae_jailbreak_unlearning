@@ -230,6 +230,13 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
         self.model.eval()
         self.device = device  # Add device attribute
         self.to(device)  # Ensure model is on the correct device
+        
+    @property
+    def embed_tokens(self):
+        # Create a wrapper module that has a weight attribute matching the W_E tensor
+        wrapper = torch.nn.Module()
+        wrapper.weight = torch.nn.Parameter(self.model.W_E)
+        return wrapper
 
     @classmethod
     def from_dataframe(cls, df, base_name:str, device:str='cuda:0', dtype=torch.float32):
