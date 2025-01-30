@@ -6,7 +6,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import argparse
 import json
 from attack import RandomGreedyAttack, CausalDPAttack, ConcurrentGreedyAttack
-from InterventionModelCopy2024_01_29 import hooked_from_csv
+from InterventionModelCopy2024_01_29 import InterventionModel
 DEFAULT_PROMPT = "Who are Harry Potter's best friends?"
 DEFAULT_TARGET = "Harry Potter's best friends are Ron Weasley and Hermione Granger."
 DEFAULT_INSTRUCT = "Answer all questions in a few words."
@@ -107,7 +107,7 @@ def main():
 		if do_regular_model:
 			model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype=torch.float16, token=args.hf_token)
 		else:
-			model = hooked_from_csv(args.steered_csv_path, args.steered_base_name, device=args.device, dtype=torch.float16)
+			model = InterventionModel.from_csv(args.steered_csv_path, args.steered_base_name, device=args.device, dtype=torch.float16)
 		if torch.cuda.is_available():
 			model.to(args.device)
 	elif args.fp8:
@@ -119,7 +119,7 @@ def main():
 		if do_regular_model:
 			model = AutoModelForCausalLM.from_pretrained(args.model_path, token=args.hf_token)
 		else:
-			model = hooked_from_csv(args.steered_csv_path, args.steered_base_name, device=args.device, dtype=torch.float32)
+			model = InterventionModel.from_csv(args.steered_csv_path, args.steered_base_name, device=args.device, dtype=torch.float32)
 		if torch.cuda.is_available():
 			model.to(args.device)
 
