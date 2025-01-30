@@ -6,14 +6,18 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 import argparse
 import json
 from attack import RandomGreedyAttack, CausalDPAttack, ConcurrentGreedyAttack
-
+from InterventionModelCopy2024_01_29 import hooked_from_csv
 DEFAULT_PROMPT = "Who are Harry Potter's best friends?"
 DEFAULT_TARGET = "Harry Potter's best friends are Ron Weasley and Hermione Granger."
 DEFAULT_INSTRUCT = "Answer all questions in a few words."
 
 def parse_args():
 	parser = argparse.ArgumentParser()
-	parser.add_argument("--model_path", type=str, required=True, help="Path to model")
+	parser.add_argument("--model_path", type=str, default="", help="Path to model")
+	parser.add_argument("--steered_base_name", type=str, default="", help="Base name for steered model")
+	parser.add_argument("--steered_csv_path", type=str, default="", help="Path to CSV for steered model")
+	
+	# Rest of the arguments
 	parser.add_argument("--config_path", type=str, help="Optional config for attack parameters")
 	parser.add_argument("--device", type=str, default="cuda:0", help="Device to run model on (e.g. cuda:0, cpu)")
 	parser.add_argument("--hf_token", type=str, help="HuggingFace token for accessing gated models")
@@ -86,23 +90,40 @@ def prompt(attack, suffix = None):
 
 def main():
 	args = parse_args()
+	
+	# Validate model arguments
+	do_intervention = (args.steered_base_name != "" and args.steered_csv_path != "")
+	do_regular_model = (args.model_path != "")
+	assert do_regular_model != do_intervention, \
+		"Must provide either model_path OR (steered_base_name AND steered_csv_path)"
+	assert not (do_regular_model and args.steered_base_name != ""), "can't provide model path if using steered model"
+	assert not (do_regular_model and args.steered_csv_path != ""), "can't provide model path if using steered csv"
 
 	if args.hf_token:
 		from huggingface_hub import login
 		login(token=args.hf_token)
 
 	if args.fp16:
-		model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype=torch.float16, token=args.hf_token)
+		if do_regular_model:
+			model = AutoModelForCausalLM.from_pretrained(args.model_path, torch_dtype=torch.float16, token=args.hf_token)
+		else:
+			model = hooked_from_csv(args.steered_csv_path, args.steered_base_name, device=args.device, dtype=torch.float16)
 		if torch.cuda.is_available():
 			model.to(args.device)
 	elif args.fp8:
-		model = AutoModelForCausalLM.from_pretrained(args.model_path, load_in_8bit=True, device_map="auto", token=args.hf_token)
+		if do_regular_model:
+			model = AutoModelForCausalLM.from_pretrained(args.model_path, load_in_8bit=True, device_map="auto", token=args.hf_token)
+		else:
+			raise NotImplementedError("Cannot use 8bit on steered models. Not because I know it isn't as simple as passing the argument dtype=torch.float8_e5m2, but because the paper is due in one day and I don't have the time to find out if it works.")
 	else:
-		model = AutoModelForCausalLM.from_pretrained(args.model_path, token=args.hf_token)
+		if do_regular_model:
+			model = AutoModelForCausalLM.from_pretrained(args.model_path, token=args.hf_token)
+		else:
+			model = hooked_from_csv(args.steered_csv_path, args.steered_base_name, device=args.device, dtype=torch.float32)
 		if torch.cuda.is_available():
 			model.to(args.device)
 
-	tokenizer = AutoTokenizer.from_pretrained(args.model_path, token=args.hf_token)
+	tokenizer = AutoTokenizer.from_pretrained(args.model_path if do_regular_model else args.steered_base_name, token=args.hf_token)
 
 	if args.verbose:
 		print("Model and tokenizer loaded")
@@ -158,7 +179,7 @@ def main():
 				text_output = tokenizer.decode(output)
 				print("Output: ", text_output)
 
-				start_index = text_output.find("")
+				start_index = text_output.find("[/INST]")
 
 				res.append({"Question": obj["question"], "Answer": text_output[start_index+7:-4], **intermediate})
 		
