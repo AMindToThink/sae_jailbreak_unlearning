@@ -139,7 +139,7 @@ string_to_steering_function_dict : dict = {'add':steering_hook_add_scaled_one_ho
                                            'debug':debug_steer,
                                            }
 def hooked_from_dataframe(df, base_name:str, device:str='cuda:0', dtype=torch.float32):
-    model = HookedSAETransformer.from_pretrained(base_name, device=device, dtype=dtype)
+    model = HookedSAETransformer.from_pretrained_no_processing(base_name, device=device, dtype=dtype)
     original_saes = model.acts_to_saes
     assert original_saes == {} # There shouldn't be any SAEs to start
     # Read steering configurations
@@ -225,7 +225,7 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
             base_name, device=device, dtype=dtype
         )
         super().__init__(trueconfig)
-        self.model = model or HookedSAETransformer.from_pretrained(base_name, device=device, dtype=dtype)
+        self.model = model or HookedSAETransformer.from_pretrained_no_processing(base_name, device=device, dtype=dtype)
         self.model.use_error_term = True
         self.model.eval()
         self.device = device  # Add device attribute
