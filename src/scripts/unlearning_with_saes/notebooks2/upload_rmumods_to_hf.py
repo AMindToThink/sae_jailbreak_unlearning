@@ -1,7 +1,8 @@
+import os
 from huggingface_hub import upload_folder, create_repo
 
 # Replace with your Hugging Face API token
-hf_token = '${HF_TOKEN}'
+hf_token = os.environ.get('HF_TOKEN')
 
 
 for layer in [3, 7, 11, 15]:
