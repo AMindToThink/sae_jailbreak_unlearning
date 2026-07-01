@@ -223,12 +223,13 @@ def hooked_from_csv(
 
     return hooked_from_dataframe(df=df, base_name=base_name, device=device, dtype=dtype)
 
-class InterventionModel(HookedSAETransformer):  # Replace with the specific model class
+class InterventionModel(torch.nn.Module):  # Replace with the specific model class
     def __init__(self, base_name: str, device: str = "cuda:0", model=None, dtype=torch.float32):
-        trueconfig = loading_from_pretrained.get_pretrained_model_config(
-            base_name, device=device, dtype=dtype
-        )
-        super().__init__(trueconfig)
+        # trueconfig = loading_from_pretrained.get_pretrained_model_config(
+        #     base_name, device=device, dtype=dtype
+        # )
+        # super().__init__(trueconfig)
+        super().__init__()
         self.model = model or HookedSAETransformer.from_pretrained_no_processing(base_name, device=device, dtype=dtype)
         self.model.use_error_term = True
         self.model.eval()
@@ -252,6 +253,7 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
         return cls(base_name=base_name, device=device, model=model, dtype=dtype)
 
     def forward(self, *args, **kwargs):
+
         torch.cuda.empty_cache()
         
         # Set up kwargs for the forward pass
@@ -266,27 +268,6 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
         # Preserve any additional args after the first one
         remaining_args = args[1:] if len(args) > 1 else tuple()
         
-        def forward_fn(input_tensor_or_embeds):
-            self.model.train()
-            for sae in self.model.acts_to_saes.values():
-                sae.train()
-                
-            if input_tensor_or_embeds.dtype == torch.long:
-                input_embeds = self.model.embed_tokens(input_tensor_or_embeds)
-            else:
-                input_embeds = input_tensor_or_embeds
-                
-            forward_kwargs = base_kwargs.copy()
-            forward_kwargs["input"] = input_embeds
-            
-            output = self.model.forward(*remaining_args, **forward_kwargs)
-            
-            self.model.eval()
-            for sae in self.model.acts_to_saes.values():
-                sae.eval()
-                
-            return output
-        
         # Determine input tensor based on provided arguments
         if input_embeds is not None:
             input_tensor = input_embeds
@@ -296,15 +277,45 @@ class InterventionModel(HookedSAETransformer):  # Replace with the specific mode
             input_tensor = args[0]
         else:
             raise ValueError("No input provided to forward pass")
+
+        # assert input_tensor.requires_grad, "Input tensor must require gradients 280"
+        # Set model to train mode
+        self.model.train()
+        for sae in self.model.acts_to_saes.values():
+            sae.train()
         
+        # Handle embedding if needed
+        if input_tensor.dtype == torch.long:
+            # Create embeddings that maintain gradients
+            with torch.set_grad_enabled(True):
+                input_embeds = self.model.embed_tokens(input_tensor).clone()
+                input_embeds.requires_grad_(True)
+        else:
+            input_embeds = input_tensor
+            if not input_embeds.requires_grad:
+                input_embeds.requires_grad_(True)
+        # assert input_tensor.requires_grad, "Input tensor must require gradients 296"
+
+        # Prepare forward kwargs
+        forward_kwargs = base_kwargs.copy()
+        forward_kwargs["input"] = input_embeds
+        # assert forward_kwargs['input'].requires_grad, "Input tensor must require gradients 301"
+
+        # Forward pass without checkpoint
         with torch.set_grad_enabled(True):
             with torch.enable_grad():
-                output = checkpoint.checkpoint(forward_fn, input_tensor)
-                
+                output = self.model.forward(*remaining_args, **forward_kwargs)
+                # assert forward_kwargs['input'].requires_grad, "Input tensor grad plz 307"
+        
+        # Set back to eval mode
+        self.model.eval()
+        for sae in self.model.acts_to_saes.values():
+            sae.eval()
+        # assert forward_kwargs['input'].requires_grad, "Input tensor grad plz 313" 
         class OutputWithLogits:
             def __init__(self, logits):
                 self.logits = logits
-                
+        # assert OutputWithLogits(output).logits.requires_grad, "Input tensor grad plz 317"  
         return OutputWithLogits(output)
 
     def generate(self, *args, **kwargs):
@@ -332,15 +343,17 @@ if __name__ == '__main__':
     text = "Hello, world!"
     input_ids = tokenizer(text, return_tensors="pt").input_ids.to("cuda:0")
 
-    # First, get the embeddings from the model's embedding layer
-    embeddings = model.model.embed_tokens(input_ids)  # Shape: [batch_size, seq_len, hidden_size]
-
+    # Create embeddings as a leaf tensor that requires grad
+    with torch.set_grad_enabled(True):
+        model.model.embed_tokens.requires_grad_(True)
+        embeddings = model.model.embed_tokens(input_ids)
+        embeddings = embeddings.clone().detach().requires_grad_(True)
+    # You can compare this with regular forward pass
+    regular_output = model.forward(input_ids=input_ids)
     # Now we can pass these embeddings to the forward method
     # This will skip the embedding layer and start at layer 0
     output = model.forward(inputs_embeds=embeddings)
 
-    # You can compare this with regular forward pass
-    regular_output = model.forward(input_ids=input_ids)
 
     # Create a simple loss and backpropagate
     loss = output.logits.mean()

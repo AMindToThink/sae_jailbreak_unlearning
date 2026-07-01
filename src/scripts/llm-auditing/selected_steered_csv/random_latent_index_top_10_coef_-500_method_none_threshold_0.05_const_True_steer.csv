@@ -1,0 +1,11 @@
+latent_idx,hook_action,refuse_id,clamp_value,steering_coefficient,sae_id,sae_release,description
+3134,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,All of the latent indices are random between 0 and 16000. The other values are identical to top_10_coef_-500_method_none_threshold_0.05_const_True_steer. The purpose of this is to verify that the attack works with random but not with specially chosen indices.
+9164,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral RNA and its properties
+2712,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to viral infections and their impact on health
+12020,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms associated with epidemiological factors in disease transmission
+7863,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to respiratory health conditions and treatments
+6621,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to viral infections and their biological impact
+6569,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,terms related to cybersecurity threats and vulnerabilities
+6542,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,"references to mental health, particularly during the COVID-19 pandemic"
+14984,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,elements related to health and safety regulations regarding public spaces
+3301,clamp_refusal,15864,0.05,-500,layer_7/width_16k/canonical,gemma-scope-2b-pt-res-canonical,references to disease cases and their statistics
